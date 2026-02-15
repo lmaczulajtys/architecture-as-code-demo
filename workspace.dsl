@@ -11,37 +11,42 @@ workspace "Demo" "Structurizr in Action" {
 
         storeStaff = person "Staff"
 
-        onlineStoreSystem = softwareSystem "Online Store" {
-            storeWebsite = container "Store Website"
+        onlineStoreSystem = softwareSystem "Online Store" "Online bookstore system" {
+            storeWebsite = container "Store Website" "Website for store customers"
             
-            storeAdminPanel = container "Store Admin Panel"
+            storeAdminPanel = container "Store Admin Panel" "Web application for store administrators"
             
-            apiServer = container "API Server"
+            apiServer = container "API Server" "Online store backend"
             
-            database = container "Database" {
+            database = container "Database" "Datastore for bookstore system" {
                 tag "Database" // For better styling
 
-                securitySchema = component "Security schema"
+                securitySchema = component "Security schema" "User acounts and permissions"
                 
-                storeSchema = component "Store schema"
+                storeSchema = component "Store schema" "Bookstore data"
             }
         }
 
-        customer -> onlineStoreSystem.storeWebsite "Uses to buy stuff"
-        storeStaff -> onlineStoreSystem.storeAdminPanel "Uses collect orders"
+        paymentsSystem = softwareSystem "Online Payments" "External system handling payments" {
+            tag "External"
+        }
+
+        customer -> onlineStoreSystem.storeWebsite "Uses to browse and buy products"
+        storeStaff -> onlineStoreSystem.storeAdminPanel "Uses to collect orders"
 
         onlineStoreSystem.storeWebsite -> onlineStoreSystem.apiServer "API calls" "REST"
         onlineStoreSystem.storeAdminPanel -> onlineStoreSystem.apiServer "API calls" "REST"
 
         onlineStoreSystem.apiServer -> onlineStoreSystem.database.securitySchema "Store user data"
         onlineStoreSystem.apiServer -> onlineStoreSystem.database.storeSchema "Get products and save orders"
+        onlineStoreSystem.apiServer -> paymentsSystem "Handle payments" "REST"
 
         prodDeployment = deploymentEnvironment "Production" {
             deploymentNode "our-production-gcp-project" {
                 tag "Google Cloud Platform - Project"
 
                 deploymentNode "kubernetes-cluster-prod" {
-                    tag "Google Cloud Platform - Kubernetes Engine" {
+                    tag "Google Cloud Platform - Kubernetes Engine"
                     
                     deploymentNode "frontend" {
                         tag "Kubernetes - ns"
@@ -107,6 +112,12 @@ workspace "Demo" "Structurizr in Action" {
             }
             element "Database" {
                 shape cylinder
+            }
+            element "External" {
+                color #5f646a
+                stroke #5f646a
+                strokeWidth 7
+                shape roundedbox
             }
             element "Boundary" {
                 strokeWidth 5
