@@ -43,7 +43,7 @@ workspace "Demo" "Structurizr in Action" {
         onlineStoreSystem.storeWebsite -> onlineStoreSystem.apiServer "API calls" "REST"
         onlineStoreSystem.storeAdminPanel -> onlineStoreSystem.apiServer "API calls" "REST"
 
-        onlineStoreSystem.apiServer -> onlineStoreSystem.authManager "Authenticate user and ast for permissions" "REST"
+        onlineStoreSystem.apiServer -> onlineStoreSystem.authManager "Authenticate user and ask for permissions" "REST"
         onlineStoreSystem.apiServer -> onlineStoreSystem.database.storeSchema "Get products and save orders"
         onlineStoreSystem.apiServer -> paymentsSystem "Handle payments" "REST"
 
