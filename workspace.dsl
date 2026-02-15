@@ -33,6 +33,10 @@ workspace "Demo" "Structurizr in Action" {
             tag "External"
         }
 
+        identityProviderSystem = softwareSystem "Identity Provider" "External identity provider" {
+            tag "External"
+        }
+
         customer -> onlineStoreSystem.storeWebsite "Uses to browse and buy products"
         storeStaff -> onlineStoreSystem.storeAdminPanel "Uses to collect orders"
 
@@ -44,6 +48,8 @@ workspace "Demo" "Structurizr in Action" {
         onlineStoreSystem.apiServer -> paymentsSystem "Handle payments" "REST"
 
         onlineStoreSystem.authManager -> onlineStoreSystem.database.securitySchema "Store user data"
+        onlineStoreSystem.authManager -> identityProviderSystem "Authenticate customers"
+        customer -> identityProviderSystem "Provide credentials"
 
         prodDeployment = deploymentEnvironment "Production" {
             deploymentNode "our-production-gcp-project" {
