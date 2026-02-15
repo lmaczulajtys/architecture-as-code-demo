@@ -18,6 +18,8 @@ workspace "Demo" "Structurizr in Action" {
             
             apiServer = container "API Server" "Online store backend"
             
+            authManager = container "Auth Manager" "Authentication and authorization"
+            
             database = container "Database" "Datastore for bookstore system" {
                 tag "Database" // For better styling
 
@@ -37,9 +39,11 @@ workspace "Demo" "Structurizr in Action" {
         onlineStoreSystem.storeWebsite -> onlineStoreSystem.apiServer "API calls" "REST"
         onlineStoreSystem.storeAdminPanel -> onlineStoreSystem.apiServer "API calls" "REST"
 
-        onlineStoreSystem.apiServer -> onlineStoreSystem.database.securitySchema "Store user data"
+        onlineStoreSystem.apiServer -> onlineStoreSystem.authManager "Authenticate user and ast for permissions" "REST"
         onlineStoreSystem.apiServer -> onlineStoreSystem.database.storeSchema "Get products and save orders"
         onlineStoreSystem.apiServer -> paymentsSystem "Handle payments" "REST"
+
+        onlineStoreSystem.authManager -> onlineStoreSystem.database.securitySchema "Store user data"
 
         prodDeployment = deploymentEnvironment "Production" {
             deploymentNode "our-production-gcp-project" {
@@ -63,6 +67,9 @@ workspace "Demo" "Structurizr in Action" {
                         tag "Kubernetes - ns"
 
                         containerInstance onlineStoreSystem.apiServer {
+                            tag "Kubernetes - deploy"
+                        }
+                        containerInstance onlineStoreSystem.authManager {
                             tag "Kubernetes - deploy"
                         }
                     }
