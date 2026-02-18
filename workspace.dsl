@@ -12,11 +12,25 @@ workspace "Demo" "Structurizr in Action" {
         storeStaff = person "Staff"
 
         onlineStoreSystem = softwareSystem "Online Store" "Online bookstore system" {
-            storeWebsite = container "Store Website" "Website for store customers"
+            storeWebsite = container "Store Website" "Website for store customers" {
+                perspectives {
+                    owner "Forntend Team"
+                }
+            }
             
-            storeAdminPanel = container "Store Admin Panel" "Web application for store administrators"
+            storeAdminPanel = container "Store Admin Panel" "Web application for store administrators" {
+                perspectives {
+                    owner "Forntend Team"
+                }
+            }
             
-            apiServer = container "API Server" "Online store backend"
+            apiServer = container "API Server" "Online store backend" {
+                properties {
+                    repository "https://github.com/..."
+                }
+            }
+            
+            authManager = container "Auth Manager" "Authentication and authorization"
             
             database = container "Database" "Datastore for bookstore system" {
                 tag "Database" // For better styling
@@ -31,15 +45,23 @@ workspace "Demo" "Structurizr in Action" {
             tag "External"
         }
 
+        identityProviderSystem = softwareSystem "Identity Provider" "External identity provider" {
+            tag "External"
+        }
+
         customer -> onlineStoreSystem.storeWebsite "Uses to browse and buy products"
         storeStaff -> onlineStoreSystem.storeAdminPanel "Uses to collect orders"
 
         onlineStoreSystem.storeWebsite -> onlineStoreSystem.apiServer "API calls" "REST"
         onlineStoreSystem.storeAdminPanel -> onlineStoreSystem.apiServer "API calls" "REST"
 
-        onlineStoreSystem.apiServer -> onlineStoreSystem.database.securitySchema "Store user data"
+        onlineStoreSystem.apiServer -> onlineStoreSystem.authManager "Authenticate user and ask for permissions" "REST"
         onlineStoreSystem.apiServer -> onlineStoreSystem.database.storeSchema "Get products and save orders"
         onlineStoreSystem.apiServer -> paymentsSystem "Handle payments" "REST"
+
+        onlineStoreSystem.authManager -> onlineStoreSystem.database.securitySchema "Store user data"
+        onlineStoreSystem.authManager -> identityProviderSystem "Authenticate customers"
+        customer -> identityProviderSystem "Provide credentials"
 
         prodDeployment = deploymentEnvironment "Production" {
             deploymentNode "our-production-gcp-project" {
@@ -63,6 +85,9 @@ workspace "Demo" "Structurizr in Action" {
                         tag "Kubernetes - ns"
 
                         containerInstance onlineStoreSystem.apiServer {
+                            tag "Kubernetes - deploy"
+                        }
+                        containerInstance onlineStoreSystem.authManager {
                             tag "Kubernetes - deploy"
                         }
                     }
@@ -98,7 +123,7 @@ workspace "Demo" "Structurizr in Action" {
             autoLayout lr
         }
 
-        themes google-cloud-platform-v1.5 kubernetes
+//        themes google-cloud-platform-v1.5 kubernetes
 
         styles {
             element "Element" {
