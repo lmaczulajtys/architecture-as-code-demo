@@ -12,11 +12,23 @@ workspace "Demo" "Structurizr in Action" {
         storeStaff = person "Staff"
 
         onlineStoreSystem = softwareSystem "Online Store" "Online bookstore system" {
-            storeWebsite = container "Store Website" "Website for store customers"
+            storeWebsite = container "Store Website" "Website for store customers" {
+                perspectives {
+                    owner "Forntend Team"
+                }
+            }
             
-            storeAdminPanel = container "Store Admin Panel" "Web application for store administrators"
+            storeAdminPanel = container "Store Admin Panel" "Web application for store administrators" {
+                perspectives {
+                    owner "Forntend Team"
+                }
+            }
             
-            apiServer = container "API Server" "Online store backend"
+            apiServer = container "API Server" "Online store backend" {
+                properties {
+                    repository "https://github.com/..."
+                }
+            }
             
             authManager = container "Auth Manager" "Authentication and authorization"
             
@@ -111,7 +123,7 @@ workspace "Demo" "Structurizr in Action" {
             autoLayout lr
         }
 
-        themes google-cloud-platform-v1.5 kubernetes
+//        themes google-cloud-platform-v1.5 kubernetes
 
         styles {
             element "Element" {

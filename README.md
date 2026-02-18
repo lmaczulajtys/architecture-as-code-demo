@@ -4,4 +4,4 @@ Demo of the Architecture as Code concept built with [Structurizr](https://struct
 
 To see diagrams, copy content of [workspace.dsl](workspace.dsl) into https://playground.structurizr.com/
 
-Read more at https://devsecopsnotes.substack.com/
+Read more at https://devsecopsnotes.substack.com/p/gitops-for-architecture
