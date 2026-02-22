@@ -1,6 +1,8 @@
 workspace "Demo" "Structurizr in Action" {
 
     !identifiers hierarchical
+    !adrs adrs
+    !docs docs
 
     configuration {
         scope softwaresystem
@@ -123,7 +125,7 @@ workspace "Demo" "Structurizr in Action" {
             autoLayout lr
         }
 
-//        themes google-cloud-platform-v1.5 kubernetes
+    //    themes google-cloud-platform-v1.5 kubernetes
 
         styles {
             element "Element" {
