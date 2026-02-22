@@ -9,46 +9,25 @@ workspace "Demo" "Structurizr in Action" {
     }
 
     model {
-        customer = person "Customer"
+        customer = person "Customer" "Our beloved customer"
 
-        storeStaff = person "Staff"
+        storeStaff = person "Store staff" "Our store's high-performing staff"
 
         onlineStoreSystem = softwareSystem "Online Store" "Online bookstore system" {
-            storeWebsite = container "Store Website" "Website for store customers" {
-                perspectives {
-                    owner "Forntend Team"
-                }
-            }
             
-            storeAdminPanel = container "Store Admin Panel" "Web application for store administrators" {
-                perspectives {
-                    owner "Forntend Team"
-                }
-            }
+            storeWebsite = container "Store Website" "Website for store customers"
             
-            apiServer = container "API Server" "Online store backend" {
-                properties {
-                    repository "https://github.com/..."
-                }
-            }
-            
-            authManager = container "Auth Manager" "Authentication and authorization"
+            storeAdminPanel = container "Store Admin Panel" "Web application for store administrators"
+
+            apiServer = container "API Server" "Online store backend"
             
             database = container "Database" "Datastore for bookstore system" {
-                tag "Database" // For better styling
+                tag "Database"
 
                 securitySchema = component "Security schema" "User acounts and permissions"
                 
                 storeSchema = component "Store schema" "Bookstore data"
             }
-        }
-
-        paymentsSystem = softwareSystem "Online Payments" "External system handling payments" {
-            tag "External"
-        }
-
-        identityProviderSystem = softwareSystem "Identity Provider" "External identity provider" {
-            tag "External"
         }
 
         customer -> onlineStoreSystem.storeWebsite "Uses to browse and buy products"
@@ -57,13 +36,17 @@ workspace "Demo" "Structurizr in Action" {
         onlineStoreSystem.storeWebsite -> onlineStoreSystem.apiServer "API calls" "REST"
         onlineStoreSystem.storeAdminPanel -> onlineStoreSystem.apiServer "API calls" "REST"
 
-        onlineStoreSystem.apiServer -> onlineStoreSystem.authManager "Authenticate user and ask for permissions" "REST"
         onlineStoreSystem.apiServer -> onlineStoreSystem.database.storeSchema "Get products and save orders"
+        onlineStoreSystem.apiServer -> onlineStoreSystem.database.storeSchema "Save payments data"
+        onlineStoreSystem.apiServer -> onlineStoreSystem.database.securitySchema "Store user data"
+        
+        paymentsSystem = softwareSystem "Online Payments" "External system handling payments" "External"
         onlineStoreSystem.apiServer -> paymentsSystem "Handle payments" "REST"
 
-        onlineStoreSystem.authManager -> onlineStoreSystem.database.securitySchema "Store user data"
-        onlineStoreSystem.authManager -> identityProviderSystem "Authenticate customers"
-        customer -> identityProviderSystem "Provide credentials"
+
+
+
+
 
         prodDeployment = deploymentEnvironment "Production" {
             deploymentNode "our-production-gcp-project" {
@@ -89,17 +72,18 @@ workspace "Demo" "Structurizr in Action" {
                         containerInstance onlineStoreSystem.apiServer {
                             tag "Kubernetes - deploy"
                         }
-                        containerInstance onlineStoreSystem.authManager {
-                            tag "Kubernetes - deploy"
-                        }
                     }
                 }
                     
-                deploymentNode "Cloud SQL for Postgres" {
+                deploymentNode "cloud-sql-instance-prod" {
                     tag "Google Cloud Platform - Cloud SQL"
 
                     containerInstance onlineStoreSystem.database
                 }
+            }
+
+            deploymentNode "payments.example.com" {
+                softwareSystemInstance paymentsSystem
             }
         }
     }
@@ -107,25 +91,21 @@ workspace "Demo" "Structurizr in Action" {
     views {
         systemContext onlineStoreSystem {
             include *
-            autoLayout lr
         }
 
         container onlineStoreSystem {
             include *
-            autoLayout lr
         }
 
         component onlineStoreSystem.database {
             include *
-            autoLayout lr
         }
 
         deployment * prodDeployment {
             include *
-            autoLayout lr
         }
 
-    //    themes google-cloud-platform-v1.5 kubernetes
+       themes google-cloud-platform-v1.5 kubernetes
 
         styles {
             element "Element" {
