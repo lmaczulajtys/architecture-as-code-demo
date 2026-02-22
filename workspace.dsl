@@ -1,8 +1,8 @@
 workspace "Demo" "Structurizr in Action" {
 
     !identifiers hierarchical
-    !adrs adrs
-    !docs docs
+    // !adrs adrs
+    // !docs docs
 
     configuration {
         scope softwaresystem
